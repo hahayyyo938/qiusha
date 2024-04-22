@@ -1,0 +1,55 @@
+要使用 Java 查询 Avalanche（AVAX）区块高度，你可以通过 Avalanche API 发起 HTTP 请求，并解析返回的 JSON 数据来获取区块高度信息。下面是一个简单的 Java 示例代码，使用 Java 中的 HttpURLConnection 类来查询 AVAX 的区块高度：
+
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class AvaxBlockHeight {
+
+    public static void main(String[] args) {
+        try {
+            URL url = new URL("https://api.avax.network/ext/info");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // Parse the JSON response to get the block height
+            String jsonResponse = response.toString();
+            int blockHeight = getBlockHeightFromJson(jsonResponse);
+            System.out.println("AVAX Block Height: " + blockHeight);
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static int getBlockHeightFromJson(String jsonResponse) {
+        // Parse the JSON response to extract the block height
+        // You can use a JSON parsing library like Gson or org.json to parse the JSON string
+        // Here is a simple manual parsing example
+        String blockHeightKey = "\"blockHeight\":";
+        int index = jsonResponse.indexOf(blockHeightKey);
+        if (index != -1) {
+            int startIndex = index + blockHeightKey.length();
+            int endIndex = jsonResponse.indexOf(",", startIndex);
+            String blockHeightStr = jsonResponse.substring(startIndex, endIndex);
+            return Integer.parseInt(blockHeightStr);
+        }
+        return -1;
+    }
+}
+```
+
+在这段代码中，我们向 Avalanche 的 API 端点（`https://api.avax.network/ext/info`）发起一个 GET 请求，并解析返回的 JSON 数据来获取最新的区块高度信息。请确保了解如何处理网络请求和 JSON 数据的解析。
+
+请注意，这只是一个简单的示例代码，要在实际项目中使用，你可能需要添加更多的错误处理和选择合适的 JSON 解析库来处理返回的数据。如果你有任何问题或需要更多帮助，请随时告诉我。
